@@ -3,6 +3,8 @@ from json import dumps, loads
 from threading import Thread
 from urllib.request import urlopen
 
+from contract_validator import validate_payload_against_contract
+
 ORDER_PAYLOAD = {"orderId": 123, "status": "APPROVED", "customerTier": "GOLD"}
 DEPENDENCY_PAYLOAD = {"status": "UP"}
 
@@ -53,6 +55,8 @@ def main() -> None:
 
     provider_json = loads(provider_response)
     dependency_json = loads(dependency_response)
+
+    validate_payload_against_contract(provider_json, "contracts/order_contract.json")
 
     assert provider_json["orderId"] == 123
     assert provider_json["status"] == "APPROVED"

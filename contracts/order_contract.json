@@ -1,0 +1,14 @@
+{
+  "contractVersion": "1.0.0",
+  "consumer": "loan-orchestration-service",
+  "provider": "order-decision-service",
+  "endpoint": "/orders/123",
+  "method": "GET",
+  "requiredFields": {
+    "orderId": "number",
+    "status": "string",
+    "customerTier": "string"
+  },
+  "allowedStatus": ["APPROVED", "REJECTED", "PENDING"],
+  "allowedCustomerTier": ["GOLD", "SILVER", "BRONZE"]
+}
