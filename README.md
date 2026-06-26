@@ -3,58 +3,69 @@
 Reference repo for consumer-driven contracts, service virtualization, and integration validation across microservices.
 
 ## Business Value
-- Proves the provider payload can be validated against a consumer-owned contract.
-- Demonstrates dependency virtualization to keep tests stable and fast.
-- Gives a practical pattern for reducing integration regressions in CI.
+- Proves a loan-orchestration consumer can block unsafe releases when upstream payloads drift.
+- Demonstrates local service virtualization across multiple dependencies to keep integration checks stable and fast.
+- Shows how consumer-owned contracts can reduce downstream defects in regulated workflows.
 
 ## Architecture
 ```mermaid
 flowchart LR
-	Consumer[Consumer Contract] --> Validator[Contract Validator]
-	Provider[Provider API Server] --> Validator
-	VirtualDep[Virtualized Dependency] --> ConsumerFlow[Consumer Flow Test]
-	Validator --> Result[Pass or Fail]
-	ConsumerFlow --> Result
+	Consumer[Loan Orchestration Consumer] --> Order[Order Decision Service]
+	Consumer --> Underwriting[Underwriting Service]
+	Consumer --> Notification[Notification Service]
+	Order --> Validator[Contract Validator]
+	Underwriting --> Validator
+	Notification --> Validator
+	Validator --> Result[Release Decision]
 ```
 
 ## What This Proves
-- You can validate service boundaries, not just UI flows.
-- You understand contract drift, resilience, and dependency isolation.
-- You can operationalize microservices QA inside CI.
+- You can model multi-service integration risk, not just test a single endpoint.
+- You understand contract drift, dependency isolation, and workflow-level correctness.
+- You can make failure modes explicit enough to block a release decision.
 
-## Included in Day 1
-- Runnable provider simulation using JDK HttpServer
-- Rest Assured contract-style validation of real JSON responses
-- WireMock-based dependency virtualization
-- CI templates for GitLab and Jenkins
-- JSON contract document and Python contract validator
+## Included In This Version
+- Multi-service orchestration demo for order, underwriting, and notification workflows
+- Consumer-owned JSON contracts for all three services
+- Contract validator that checks required fields, types, and allowed values
+- Happy-path scenario and intentional schema-drift failure scenario
+- CI templates for GitLab and Jenkins for future pipeline integration
 
 ## Quick Start
 ```bash
-python demo/contract_demo.py
+python demo/contract_demo.py --scenario happy-path
 ```
 
 PowerShell alternative:
 ```powershell
-.\run-demo.ps1
+.\run-demo.ps1 --scenario happy-path
 ```
 
 ## Demonstrable Behavior
-1. Starts a local provider server and validates order payload fields.
-2. Spins up a virtualized dependency endpoint and proves the consumer can isolate it.
-3. Validates provider response against a consumer-owned contract file.
-4. Runs without external dependencies so it is immediately demonstrable.
+1. Simulates a loan-orchestration consumer calling three local services.
+2. Validates each service response against a consumer-owned contract.
+3. Passes a realistic happy path when all contracts are honored.
+4. Fails fast when the order service introduces schema drift.
+
+## Key Scenarios
+1. Happy path: `python demo/contract_demo.py --scenario happy-path`
+2. Schema drift: `python demo/contract_demo.py --scenario schema-drift`
 
 ## Core Files
 - contracts/order_contract.json
+- contracts/underwriting_contract.json
+- contracts/notification_contract.json
 - demo/contract_demo.py
 - demo/contract_validator.py
+- docs/architecture.md
+- docs/risk-map.md
 
 ## Evidence
-See: docs/evidence.md
+1. Success run: docs/evidence.md
+2. Failure run: docs/evidence-failure.md
 
 ## Roadmap
-1. Consumer contract tests
-2. Provider verification pipeline
-3. Integration workflows with retries and failure simulation
-4. CI quality gate for contract drift
+1. Add timeout and fallback scenarios for underwriting and notification dependencies.
+2. Add CI gate that fails pull requests on contract drift.
+3. Add contract version diffing and breaking-change classification.
+4. Add release readiness output tied to integration scenario results.

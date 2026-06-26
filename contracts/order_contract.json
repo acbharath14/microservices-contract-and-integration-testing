@@ -9,6 +9,8 @@
     "status": "string",
     "customerTier": "string"
   },
-  "allowedStatus": ["APPROVED", "REJECTED", "PENDING"],
-  "allowedCustomerTier": ["GOLD", "SILVER", "BRONZE"]
+  "allowedValues": {
+    "status": ["APPROVED", "REJECTED", "PENDING"],
+    "customerTier": ["GOLD", "SILVER", "BRONZE"]
+  }
 }

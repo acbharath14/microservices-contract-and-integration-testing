@@ -31,8 +31,8 @@ def validate_payload_against_contract(payload: dict[str, Any], contract_path: st
             raise ContractViolation(f"Missing required field '{field}' in provider payload")
         _validate_type(field, expected_type, payload[field])
 
-    if payload["status"] not in contract["allowedStatus"]:
-        raise ContractViolation("Field 'status' has unsupported value")
-
-    if payload["customerTier"] not in contract["allowedCustomerTier"]:
-        raise ContractViolation("Field 'customerTier' has unsupported value")
+    for field, allowed_values in contract.get("allowedValues", {}).items():
+        if payload[field] not in allowed_values:
+            raise ContractViolation(
+                f"Field '{field}' has unsupported value '{payload[field]}'"
+            )
