@@ -4,6 +4,7 @@ import argparse
 from dataclasses import dataclass
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from json import dumps, loads
+from pathlib import Path
 from socket import timeout as SocketTimeout
 from threading import Thread
 import time
@@ -127,6 +128,11 @@ def parse_args() -> argparse.Namespace:
         default="happy-path",
         help="Choose whether to run a successful workflow or an intentional contract failure",
     )
+    parser.add_argument(
+        "--report-file",
+        default="",
+        help="Optional path for writing a machine-readable scenario outcome report",
+    )
     return parser.parse_args()
 
 
@@ -142,6 +148,14 @@ def print_release_decision(status: str, reason: str, fallback_applied: bool) -> 
     print("Release decision:", status)
     print("Decision reason:", reason)
     print("Fallback applied:", fallback_applied)
+
+
+def write_report(report_file: str, report: dict[str, object]) -> None:
+    if not report_file:
+        return
+    path = Path(report_file)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(dumps(report, indent=2), encoding="utf-8")
 
 
 def main() -> None:
@@ -184,13 +198,43 @@ def main() -> None:
         print("Notification payload:", notification_json)
         if args.scenario == "timeout-fallback":
             print_release_decision("WARN", "Underwriting timed out and fallback policy was used", fallback_applied)
+            write_report(
+                args.report_file,
+                {
+                    "scenario": args.scenario,
+                    "outcome": "PASS",
+                    "releaseDecision": "WARN",
+                    "reason": "Underwriting timed out and fallback policy was used",
+                    "fallbackApplied": fallback_applied,
+                },
+            )
         else:
             print_release_decision("PASS", "All service contracts were satisfied", fallback_applied)
+            write_report(
+                args.report_file,
+                {
+                    "scenario": args.scenario,
+                    "outcome": "PASS",
+                    "releaseDecision": "PASS",
+                    "reason": "All service contracts were satisfied",
+                    "fallbackApplied": fallback_applied,
+                },
+            )
     except ContractViolation as error:
         print("Orchestration scenario failed")
         print("Scenario:", args.scenario)
         print("Reason:", error)
         print_release_decision("BLOCK", "Contract drift detected in a critical dependency", fallback_applied)
+        write_report(
+            args.report_file,
+            {
+                "scenario": args.scenario,
+                "outcome": "FAIL",
+                "releaseDecision": "BLOCK",
+                "reason": str(error),
+                "fallbackApplied": fallback_applied,
+            },
+        )
         raise SystemExit(1) from error
     finally:
         for server in servers:

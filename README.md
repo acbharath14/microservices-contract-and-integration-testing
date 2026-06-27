@@ -33,6 +33,7 @@ flowchart LR
 - Consumer-owned JSON contracts for all three services
 - Contract validator that checks required fields, types, and allowed values
 - Happy-path scenario, intentional schema-drift failure scenario, and timeout-fallback scenario
+- Machine-readable scenario and suite reports for downstream governance tools
 - CI templates for GitLab and Jenkins for future pipeline integration
 
 ## Quick Start
@@ -57,11 +58,22 @@ PowerShell alternative:
 2. Schema drift: `python demo/contract_demo.py --scenario schema-drift`
 3. Timeout fallback: `python demo/contract_demo.py --scenario timeout-fallback`
 
+## Suite Runner
+Run all scenarios and generate an aggregated report:
+
+```bash
+python demo/run_release_suite.py
+```
+
+Generated report:
+- `reports/integration-suite-report.json`
+
 ## Core Files
 - contracts/order_contract.json
 - contracts/underwriting_contract.json
 - contracts/notification_contract.json
 - demo/contract_demo.py
+- demo/run_release_suite.py
 - demo/contract_validator.py
 - docs/architecture.md
 - docs/risk-map.md
@@ -70,6 +82,7 @@ PowerShell alternative:
 1. Success run: docs/evidence.md
 2. Failure run: docs/evidence-failure.md
 3. Fallback run: docs/evidence-timeout-fallback.md
+4. Suite run: docs/evidence-suite.md
 
 ## Roadmap
 1. Add retry budget and circuit-breaker style behavior for repeated dependency failures.
