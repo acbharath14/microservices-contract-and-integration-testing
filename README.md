@@ -1,6 +1,14 @@
 # Microservices Contract and Integration Testing
 
-Reference repo for consumer-driven contracts, service virtualization, and integration validation across microservices.
+## Portfolio Role
+This repository is the integration risk detection part of the portfolio story.
+It shows how consumer-driven contracts, service virtualization, and scenario evidence can block unsafe releases.
+
+## Profile Map
+- Portfolio narrative: integration risk detection
+- Skill signal: contract testing and integration risk control
+- Review focus: multi-service orchestration, schema drift, and timeout fallback
+- Evidence anchor: `docs/evidence-suite.md`
 
 ## Business Value
 - Proves a loan-orchestration consumer can block unsafe releases when upstream payloads drift.
