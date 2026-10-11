@@ -19,6 +19,12 @@ jobs:
       - name: Run contract and integration tests
         run: mvn -q test
         working-directory: integration-tests
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: java-test-reports
+          path: integration-tests/target/surefire-reports/
 
   python-release-demo:
     runs-on: ubuntu-latest
@@ -31,3 +37,9 @@ jobs:
           python-version: "3.12"
       - name: Run release suite
         run: python demo/run_release_suite.py
+      - name: Upload suite report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-suite-report
+          path: reports/
