@@ -1,0 +1,16 @@
+{
+  "contractVersion": "1.0.0",
+  "consumer": "loan-orchestration-service",
+  "provider": "underwriting-service",
+  "endpoint": "/underwriting/123",
+  "method": "GET",
+  "requiredFields": {
+    "orderId": "number",
+    "decision": "string",
+    "riskBand": "string"
+  },
+  "allowedValues": {
+    "decision": ["APPROVED", "REVIEW", "DECLINED"],
+    "riskBand": ["LOW", "MEDIUM", "HIGH"]
+  }
+}
