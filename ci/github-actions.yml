@@ -1,0 +1,45 @@
+# TEMPLATE — do not place under .github/workflows/ via automation.
+#
+# The Meta Muse GitHub App cannot push workflow files, so to enable CI:
+#   1. In GitHub, go to Actions → New workflow → "set up a workflow yourself"
+#      (or Add file → Create new file at .github/workflows/ci.yml on main).
+#   2. Paste the body of this file (from `name:` below) and commit.
+#
+# What it runs:
+#   - Java: mvn test in integration-tests/ (JUnit 5, REST Assured, WireMock,
+#     Pact consumer + provider verification, OpenAPI validation)
+#   - Python: demo/run_release_suite.py (happy-path, schema-drift,
+#     timeout-fallback orchestration scenarios)
+
+name: contract-tests
+
+"on":
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  java-contract-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+      - name: Run contract and integration tests
+        run: mvn -q test
+        working-directory: integration-tests
+
+  python-release-demo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run release suite
+        run: python demo/run_release_suite.py
