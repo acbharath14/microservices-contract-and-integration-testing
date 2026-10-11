@@ -32,6 +32,19 @@ jobs:
       - name: Run contract and integration tests
         run: mvn -q test
         working-directory: integration-tests
+      - name: Build readable test summary
+        if: always()
+        run: |
+          echo "# Contract Test Summary" > integration-tests/target/surefire-reports/SUMMARY.md
+          echo "" >> integration-tests/target/surefire-reports/SUMMARY.md
+          for f in integration-tests/target/surefire-reports/*.txt; do
+            echo "## $(basename $f .txt)" >> integration-tests/target/surefire-reports/SUMMARY.md
+            echo '```' >> integration-tests/target/surefire-reports/SUMMARY.md
+            grep -E "Tests run|Test set" "$f" >> integration-tests/target/surefire-reports/SUMMARY.md
+            echo '```' >> integration-tests/target/surefire-reports/SUMMARY.md
+            echo "" >> integration-tests/target/surefire-reports/SUMMARY.md
+          done
+          cat integration-tests/target/surefire-reports/SUMMARY.md
       - name: Upload test reports
         if: always()
         uses: actions/upload-artifact@v4
