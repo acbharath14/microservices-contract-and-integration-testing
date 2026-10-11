@@ -1,0 +1,16 @@
+{
+  "contractVersion": "1.0.0",
+  "consumer": "loan-orchestration-service",
+  "provider": "notification-service",
+  "endpoint": "/notifications/123",
+  "method": "GET",
+  "requiredFields": {
+    "orderId": "number",
+    "channel": "string",
+    "deliveryState": "string"
+  },
+  "allowedValues": {
+    "channel": ["EMAIL", "SMS"],
+    "deliveryState": ["QUEUED", "SENT", "FAILED"]
+  }
+}
