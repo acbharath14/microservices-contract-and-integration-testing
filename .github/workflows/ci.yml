@@ -22,15 +22,27 @@ jobs:
       - name: Build readable test summary
         if: always()
         run: |
-          echo "# Contract Test Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          for f in integration-tests/target/surefire-reports/*.txt; do
-            echo "## $(basename $f .txt)" >> $GITHUB_STEP_SUMMARY
-            echo '```' >> $GITHUB_STEP_SUMMARY
-            grep -E "Tests run|Test set" "$f" >> $GITHUB_STEP_SUMMARY
-            echo '```' >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-          done
+          python3 - << 'EOF' >> $GITHUB_STEP_SUMMARY
+          import glob, xml.etree.ElementTree as ET
+          print("# Contract Test Summary\n")
+          tp = tf = te = ts = 0
+          for xf in sorted(glob.glob("integration-tests/target/surefire-reports/TEST-*.xml")):
+              root = ET.parse(xf).getroot()
+              print(f"## {root.get('name', xf)}")
+              for tc in root.iter("testcase"):
+                  tname = tc.get("name")
+                  if tc.find("failure") is not None: s, icon = "FAIL", "❌"
+                  elif tc.find("error") is not None: s, icon = "ERROR", "❌"
+                  elif tc.find("skipped") is not None: s, icon = "SKIPPED", "⏭️"
+                  else: s, icon = "PASS", "✅"
+                  print(f"- {icon} {tname} ({s})")
+                  if s == "PASS": tp += 1
+                  elif s == "SKIPPED": ts += 1
+                  elif s == "FAIL": tf += 1
+                  else: te += 1
+              print()
+          print(f"**Total: {tp} passed, {tf} failed, {te} errors, {ts} skipped**")
+          EOF
       - name: Upload test reports
         if: always()
         uses: actions/upload-artifact@v4
