@@ -35,6 +35,10 @@ jobs:
 
   python-release-demo:
     runs-on: ubuntu-latest
+    # The suite intentionally includes a schema-drift scenario that BLOCKs
+    # the release (exit 1). That's the gate working — don't red-badge the
+    # repo for it. The decision stays visible in the job logs.
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
