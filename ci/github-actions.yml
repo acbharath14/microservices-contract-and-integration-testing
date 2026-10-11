@@ -35,16 +35,27 @@ jobs:
       - name: Build readable test summary
         if: always()
         run: |
-          echo "# Contract Test Summary" > integration-tests/target/surefire-reports/SUMMARY.md
-          echo "" >> integration-tests/target/surefire-reports/SUMMARY.md
-          for f in integration-tests/target/surefire-reports/*.txt; do
-            echo "## $(basename $f .txt)" >> integration-tests/target/surefire-reports/SUMMARY.md
-            echo '```' >> integration-tests/target/surefire-reports/SUMMARY.md
-            grep -E "Tests run|Test set" "$f" >> integration-tests/target/surefire-reports/SUMMARY.md
-            echo '```' >> integration-tests/target/surefire-reports/SUMMARY.md
-            echo "" >> integration-tests/target/surefire-reports/SUMMARY.md
-          done
-          cat integration-tests/target/surefire-reports/SUMMARY.md
+          python3 - << 'EOF' >> $GITHUB_STEP_SUMMARY
+          import glob, xml.etree.ElementTree as ET
+          print("# Contract Test Summary\n")
+          tp = tf = te = ts = 0
+          for xf in sorted(glob.glob("integration-tests/target/surefire-reports/TEST-*.xml")):
+              root = ET.parse(xf).getroot()
+              print(f"## {root.get('name', xf)}")
+              for tc in root.iter("testcase"):
+                  tname = tc.get("name")
+                  if tc.find("failure") is not None: s, icon = "FAIL", "\u274c"
+                  elif tc.find("error") is not None: s, icon = "ERROR", "\u274c"
+                  elif tc.find("skipped") is not None: s, icon = "SKIPPED", "\u23ed"
+                  else: s, icon = "PASS", "\u2705"
+                  print(f"- {icon} {tname} ({s})")
+                  if s == "PASS": tp += 1
+                  elif s == "SKIPPED": ts += 1
+                  elif s == "FAIL": tf += 1
+                  else: te += 1
+              print()
+          print(f"**Total: {tp} passed, {tf} failed, {te} errors, {ts} skipped**")
+          EOF
       - name: Upload test reports
         if: always()
         uses: actions/upload-artifact@v4
