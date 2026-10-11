@@ -5,6 +5,7 @@ import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit5.PactConsumerTestExt;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
+import au.com.dius.pact.core.model.PactSpecVersion;
 import au.com.dius.pact.core.model.RequestResponsePact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,8 @@ import static org.hamcrest.Matchers.equalTo;
  * {@link OrderProviderPactTest}.
  */
 @ExtendWith(PactConsumerTestExt.class)
-@PactTestFor(providerName = "order-decision-service", port = "0")
+@PactTestFor(providerName = "order-decision-service", port = "0",
+               pactVersion = PactSpecVersion.V3)
 class OrderConsumerPactTest {
 
     @Pact(consumer = "loan-orchestration-service")
