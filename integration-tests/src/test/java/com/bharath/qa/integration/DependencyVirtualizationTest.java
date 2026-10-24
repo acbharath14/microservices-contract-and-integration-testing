@@ -32,7 +32,7 @@ class DependencyVirtualizationTest {
     }
 
     @Test
-    void externalDependencyCanBeVirtualized() {
+    void virtualizedHealthEndpointReturnsStatusUp() {
         given()
                 .baseUri("http://localhost:" + wireMockServer.port())
         .when()

@@ -49,7 +49,7 @@ class OrderConsumerPactTest {
 
     @Test
     @PactTestFor(pactMethod = "getOrder")
-    void consumerHonorsPact(MockServer mockServer) {
+    void consumerReceivesApprovedGoldOrder(MockServer mockServer) {
         given()
                 .baseUri(mockServer.getUrl())
                 .when()

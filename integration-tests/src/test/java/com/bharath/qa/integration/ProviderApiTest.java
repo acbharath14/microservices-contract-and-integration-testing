@@ -27,7 +27,7 @@ class ProviderApiTest {
     }
 
     @Test
-    void returnsTheExpectedOrderRepresentation() {
+    void getOrderReturnsApprovedGoldOrder123() {
         given()
                 .baseUri("http://localhost:" + providerServer.port())
         .when()
