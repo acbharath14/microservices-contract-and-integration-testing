@@ -52,7 +52,7 @@ The report is machine-readable on purpose — it's designed to feed the release-
 - `demo/` — runnable demo (`contract_demo.py`), contract validator, suite runner
 - `integration-tests/` — Java integration tests (Maven): contract verification, dependency virtualization, provider API tests
 - `virtual-services/` — WireMock stubs for the three dependencies
-- `ci/` — GitLab CI and Jenkins pipeline templates
+- `ci/` — GitLab CI, Jenkins, and GitHub Actions pipeline templates (the live GitHub workflow is `.github/workflows/ci.yml`; `ci/github-actions.yml` is its reference copy)
 - `docs/` — architecture, risk map, and evidence from real runs
 
 ## What's implemented

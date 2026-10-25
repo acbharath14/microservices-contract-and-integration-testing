@@ -1,16 +1,16 @@
-# TEMPLATE — do not place under .github/workflows/ via automation.
+# REFERENCE COPY — the live workflow is .github/workflows/ci.yml.
 #
-# The Meta Muse GitHub App cannot push workflow files, so to enable CI:
-#   1. In GitHub, go to Actions → New workflow → "set up a workflow yourself"
-#      (or Add file → Create new file at .github/workflows/ci.yml on main).
-#   2. Paste the body of this file (from `name:` below) and commit.
+# This file is kept in ci/ alongside the Jenkins and GitLab templates so all
+# pipeline definitions live in one place. It mirrors the live workflow; if
+# they drift, the live file wins. (Workflow files cannot be pushed through
+# the GitHub App API, so any update to the live file goes through the web UI.)
 #
 # What it runs:
 #   - Java: mvn test in integration-tests/ (JUnit 5, REST Assured, WireMock,
 #     Pact consumer + provider verification, OpenAPI validation)
 #   - Python: demo/run_release_suite.py (happy-path, schema-drift,
 #     timeout-fallback orchestration scenarios)
-
+#
 name: contract-tests
 
 "on":
@@ -44,10 +44,10 @@ jobs:
               print(f"## {root.get('name', xf)}")
               for tc in root.iter("testcase"):
                   tname = tc.get("name")
-                  if tc.find("failure") is not None: s, icon = "FAIL", "\u274c"
-                  elif tc.find("error") is not None: s, icon = "ERROR", "\u274c"
-                  elif tc.find("skipped") is not None: s, icon = "SKIPPED", "\u23ed"
-                  else: s, icon = "PASS", "\u2705"
+                  if tc.find("failure") is not None: s, icon = "FAIL", "❌"
+                  elif tc.find("error") is not None: s, icon = "ERROR", "❌"
+                  elif tc.find("skipped") is not None: s, icon = "SKIPPED", "⏭️"
+                  else: s, icon = "PASS", "✅"
                   print(f"- {icon} {tname} ({s})")
                   if s == "PASS": tp += 1
                   elif s == "SKIPPED": ts += 1
@@ -66,9 +66,6 @@ jobs:
   python-release-demo:
     runs-on: ubuntu-latest
     needs: java-contract-tests
-    # The suite intentionally includes a schema-drift scenario that BLOCKs
-    # the release (exit 1). That's the gate working — don't red-badge the
-    # repo for it. The decision stays visible in the job logs.
     continue-on-error: true
     steps:
       - uses: actions/checkout@v4
@@ -76,6 +73,9 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      # The suite intentionally includes a schema-drift scenario that BLOCKs
+      # the release (exit 1). That's the gate working — don't red-badge the
+      # repo for it. The decision stays visible in the job logs.
       - name: Run release suite
         run: python demo/run_release_suite.py
       - name: Upload suite report
