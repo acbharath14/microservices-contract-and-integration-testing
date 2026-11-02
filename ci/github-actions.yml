@@ -62,6 +62,7 @@ jobs:
         with:
           name: java-test-reports
           path: integration-tests/target/surefire-reports/
+          retention-days: 7
 
   python-release-demo:
     runs-on: ubuntu-latest
@@ -84,3 +85,5 @@ jobs:
         with:
           name: release-suite-report
           path: reports/
+          retention-days: 7
+
