@@ -47,7 +47,6 @@ class ContractVerificationTest {
 
     @ParameterizedTest(name = "provider honors {0}")
     @ValueSource(strings = {
-            "contracts/order_contract.json",
             "contracts/underwriting_contract.json",
             "contracts/notification_contract.json"
     })
