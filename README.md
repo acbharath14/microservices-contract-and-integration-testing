@@ -51,6 +51,7 @@ The report is machine-readable on purpose — it's designed to feed the release-
 - `contracts/` — consumer-owned JSON contracts for all three services
 - `demo/` — runnable demo (`contract_demo.py`), contract validator, suite runner
 - `integration-tests/` — Java integration tests (Maven): contract verification, dependency virtualization, provider API tests
+- `integration-tests/src/test/java/com/bharath/qa/integration/showcase/` — WireMock showcase: stubbing, delays, stateful scenarios, request verification, and fault injection (see below)
 - `virtual-services/` — WireMock stubs for the three dependencies
 - `ci/` — GitLab CI, Jenkins, and GitHub Actions pipeline templates (the live GitHub workflow is `.github/workflows/ci.yml`; `ci/github-actions.yml` is its reference copy)
 - `docs/` — architecture, risk map, and evidence from real runs
@@ -60,6 +61,10 @@ The report is machine-readable on purpose — it's designed to feed the release-
 - **Pact consumer-driven contracts** — `OrderConsumerPactTest` generates the pact, `OrderProviderPactTest` verifies the provider against it (Pact JVM 4.6.2)
 - **OpenAPI schema validation** — `OpenApiValidationTest` validates provider responses against `openapi.yaml`
 - **CI gate** — `.github/workflows/ci.yml` runs all contract tests on every push/PR; the Python release suite reports PASS/WARN/BLOCK per scenario
+
+## WireMock showcase
+
+The showcase in `integration-tests/src/test/java/com/bharath/qa/integration/showcase/` demonstrates WireMock features — stubbing from files, fixed delays, stateful scenarios, request verification, and fault injection — against the three contracted services. It runs with `mvn test -Pwiremock-showcase` and is excluded from the default run: it demonstrates WireMock features rather than adding coverage, so it is not counted in the suite.
 
 ## Roadmap
 
